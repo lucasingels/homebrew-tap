@@ -9,6 +9,9 @@ class SaplingDev < Formula
   bottle do
     url "https://github.com/lucasingels/sapling/releases/download/v0.1.4/sapling-dev-0.1.4.arm64.bottle.tar.gz"
     sha256 cellar: :any, arm64_sequoia: "1ae1fe4f69542238baf6ccbb61409c0815e8d68cad1d03d5aae3dd4004647fee"
+    sha256 cellar: :any, arm64_sonoma:   "1ae1fe4f69542238baf6ccbb61409c0815e8d68cad1d03d5aae3dd4004647fee"
+    sha256 cellar: :any, arm64_ventura:  "1ae1fe4f69542238baf6ccbb61409c0815e8d68cad1d03d5aae3dd4004647fee"
+    sha256 cellar: :any, arm64_monterey: "1ae1fe4f69542238baf6ccbb61409c0815e8d68cad1d03d5aae3dd4004647fee"
   end
 
   depends_on "python@3.11"
