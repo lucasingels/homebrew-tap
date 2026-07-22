@@ -12,12 +12,7 @@ class SaplingDev < Formula
   # These fields are intended to be populated by a Github action
   url "file:///Users/runner/work/sapling/sapling/sapling.tar.gz"
   version "0.3"
-  sha256 "0226d6432710954f7cdbd0c1ba1ff45f0dbcac0e56fabbce456122edfdff79c4"
-
-  bottle do
-    root_url "https://github.com/lucasingels/sapling/releases/download/v0.3"
-    sha256 arm64_tahoe: "a728c8bb0e18d06b2b20edbf44efd442f7c8f819174717c5bfad76c6c2bed7d6"
-  end
+  sha256 "3ab1b7b3f15cfcd7e34bfed91df048cb8fef3edaa59a382b96f36ca304e1992c"
 
   depends_on "python@3.12"
   depends_on "node"
