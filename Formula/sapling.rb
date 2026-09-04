@@ -14,6 +14,11 @@ class Sapling < Formula
   version "eden-test-5"
   sha256 "0a391df6a9faa65285c9b27ae075706ffc07858105c5f9a57e77bed90a8eae62"
 
+  bottle do
+    root_url "https://github.com/lucasingels/sapling/releases/download/veden-test-5"
+    sha256 arm64_tahoe: "f0ed3242e10c1ed44c6fde2d986f06580044086aee1dccd533327df1be40999c"
+  end
+
   depends_on "python@3.12"
   depends_on "node"
   depends_on "openssl@3"
