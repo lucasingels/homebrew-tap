@@ -11,13 +11,8 @@ class Sapling < Formula
   license "GPL-2.0-or-later"
   # These fields are intended to be populated by a Github action
   url "file:///Users/runner/work/sapling/sapling/sapling.tar.gz"
-  version "0.3.4"
-  sha256 "b2dff882607d14c5455865b56e3c304fb6abfb740bb29455e726a97d626ae6e1"
-
-  bottle do
-    root_url "https://github.com/lucasingels/sapling/releases/download/v0.3.4"
-    sha256 arm64_tahoe: "9416a02c76658778c6199ef8f4bd9d454e8c0fe46f394c53c87d06dd9df9742d"
-  end
+  version "0.3.5"
+  sha256 "4f25f42bbb45594bb8697c7108a8ca1dce79ba31ac740e01acca3aff80de02cf"
 
   depends_on "python@3.12"
   depends_on "node"
@@ -44,6 +39,25 @@ class Sapling < Formula
     # compile them, matching the getdeps build (fbcode_builder/getdeps/cargo.py).
     ENV["RUSTC_BOOTSTRAP"] = "1"
 
+    # The release workflow routes rustc through sccache so crates whose inputs
+    # are unchanged come from the GitHub Actions cache instead of being rebuilt.
+    # Homebrew scrubs the environment before running a formula and only lets
+    # HOMEBREW_* variables through, so the workflow hands the sccache binary over
+    # under that prefix. The wrapper mirrors Homebrew's own rustc shim
+    # (Library/Homebrew/shims/shared/rustc_wrapper, which appends
+    # HOMEBREW_RUSTFLAGS) with sccache in front of the compiler.
+    sccache = ENV.fetch("HOMEBREW_SAPLING_SCCACHE", "")
+    unless sccache.empty?
+      wrapper = buildpath/"sccache_rustc_wrapper"
+      wrapper.write <<~EOS
+        #!/bin/bash
+        read -ra RUSTFLAGS <<<"${HOMEBREW_RUSTFLAGS:-}"
+        exec "#{sccache}" "$@" "${RUSTFLAGS[@]}"
+      EOS
+      wrapper.chmod 0755
+      ENV["RUSTC_WRAPPER"] = wrapper.to_s
+    end
+
     python = Formula["python@3.12"].opt_prefix/"bin/python3.12"
 
     cd "eden/scm" do
@@ -51,7 +65,7 @@ class Sapling < Formula
       system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && rustup target add aarch64-apple-darwin"
       system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && "\
              "#{python} ./build.py --oss --with-python #{python} "\
-             "--with-version 0.3.4 --rust-target aarch64-apple-darwin"
+             "--with-version 0.3.5 --rust-target aarch64-apple-darwin"
       bin.install "out/sl"
       lib.install "out/isl-dist.tar.xz"
     end
