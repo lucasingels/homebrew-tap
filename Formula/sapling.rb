@@ -14,6 +14,11 @@ class Sapling < Formula
   version "0.3.7"
   sha256 "01e343f42f1775909ca83f98618597df74b96c7911b68419d80de29bc9faee8a"
 
+  bottle do
+    root_url "https://github.com/lucasingels/sapling/releases/download/v0.3.7"
+    sha256 arm64_tahoe: "df6f10a42d86410c5ceca13e69105b31a50dbb9a6168dadb6a3cc7373b73f96f"
+  end
+
   depends_on "python@3.12"
   depends_on "node"
   depends_on "openssl@3"
