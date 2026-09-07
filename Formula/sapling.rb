@@ -11,13 +11,8 @@ class Sapling < Formula
   license "GPL-2.0-or-later"
   # These fields are intended to be populated by a Github action
   url "file:///Users/runner/work/sapling/sapling/sapling.tar.gz"
-  version "0.3.7"
-  sha256 "01e343f42f1775909ca83f98618597df74b96c7911b68419d80de29bc9faee8a"
-
-  bottle do
-    root_url "https://github.com/lucasingels/sapling/releases/download/v0.3.7"
-    sha256 arm64_tahoe: "df6f10a42d86410c5ceca13e69105b31a50dbb9a6168dadb6a3cc7373b73f96f"
-  end
+  version "0.3.8"
+  sha256 "77455ef576856a1de309674c63bd18f008cdc42359cf6eb3630ea77bdd55a0e7"
 
   depends_on "python@3.12"
   depends_on "node"
@@ -70,7 +65,7 @@ class Sapling < Formula
       system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && rustup target add aarch64-apple-darwin"
       system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && "\
              "#{python} ./build.py --oss --with-python #{python} "\
-             "--with-version 0.3.7 --rust-target aarch64-apple-darwin"
+             "--with-version 0.3.8 --rust-target aarch64-apple-darwin"
       bin.install "out/sl"
       lib.install "out/isl-dist.tar.xz"
     end
