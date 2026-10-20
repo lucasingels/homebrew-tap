@@ -11,13 +11,8 @@ class Sapling < Formula
   license "GPL-2.0-or-later"
   # These fields are intended to be populated by a Github action
   url "file:///Users/runner/work/sapling/sapling/sapling.tar.gz"
-  version "0.3.10"
-  sha256 "ad995e0b54addd5058d2117a3159af807385b345df2302cf57c869147e16dddc"
-
-  bottle do
-    root_url "https://github.com/lucasingels/sapling/releases/download/v0.3.10"
-    sha256 arm64_tahoe: "bb98465498622afd205e75c28f2b768c88c5d6189beefa71c0f1e70a621c3fdf"
-  end
+  version "0.3.11"
+  sha256 "30e7616a85f1087c324e778a420324a4805ce2e013fd78d333f59126796502d8"
 
   depends_on "python@3.12"
   depends_on "node"
@@ -65,14 +60,26 @@ class Sapling < Formula
 
     python = Formula["python@3.12"].opt_prefix/"bin/python3.12"
 
-    cd "eden/scm" do
-      system "rustup-init -y"
-      system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && rustup target add aarch64-apple-darwin"
-      system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && "\
-             "#{python} ./build.py --oss --with-python #{python} "\
-             "--with-version 0.3.10 --rust-target aarch64-apple-darwin"
-      bin.install "out/sl"
-      lib.install "out/isl-dist.tar.xz"
+    # sccache keys each compile on its working directory and on the CARGO_* variables, which
+    # hold absolute paths, and Homebrew unpacks the source into a new temp dir on every run.
+    # Building from a fixed path lets the fork's own crates hit the cache, not just the
+    # registry ones. HOMEBREW_TEMP is writable inside Homebrew's build sandbox.
+    build_root = Pathname(HOMEBREW_TEMP)/"sapling-build"
+    rm_r build_root if build_root.exist?
+    cp_r buildpath, build_root
+
+    begin
+      cd build_root/"eden/scm" do
+        system "rustup-init -y"
+        system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && rustup target add aarch64-apple-darwin"
+        system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && "\
+               "#{python} ./build.py --oss --with-python #{python} "\
+               "--with-version 0.3.11 --rust-target aarch64-apple-darwin"
+        bin.install "out/sl"
+        lib.install "out/isl-dist.tar.xz"
+      end
+    ensure
+      rm_r build_root if build_root.exist?
     end
 
     libexec.install "#{prefix}/bin/sl"
