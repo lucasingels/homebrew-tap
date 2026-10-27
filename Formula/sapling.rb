@@ -11,13 +11,8 @@ class Sapling < Formula
   license "GPL-2.0-or-later"
   # These fields are intended to be populated by a Github action
   url "file:///Users/runner/work/sapling/sapling/sapling.tar.gz"
-  version "0.3.11"
-  sha256 "30e7616a85f1087c324e778a420324a4805ce2e013fd78d333f59126796502d8"
-
-  bottle do
-    root_url "https://github.com/lucasingels/sapling/releases/download/v0.3.11"
-    sha256 arm64_tahoe: "50dc2f56acd1ece4fb7e4bff06020ed9ca78f853332f892c8e53003010ebbfc0"
-  end
+  version "0.3.12"
+  sha256 "6be3b76702f5173c88340652b31bdb766f0f448bdc9076ffd61c00c9e2edc4f0"
 
   depends_on "python@3.12"
   depends_on "node"
@@ -75,11 +70,15 @@ class Sapling < Formula
 
     begin
       cd build_root/"eden/scm" do
-        system "rustup-init -y"
-        system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && rustup target add aarch64-apple-darwin"
-        system "source /Users/runner/Library/Caches/Homebrew/cargo_cache/env && "\
-               "#{python} ./build.py --oss --with-python #{python} "\
-               "--with-version 0.3.11 --rust-target aarch64-apple-darwin"
+        # Homebrew's rustup no longer provides `rustup-init` (it installs that
+        # binary as `rustup` itself), so install the toolchain with rustup
+        # directly. Its keg's bin holds the cargo and rustc proxies.
+        ENV.prepend_path "PATH", Formula["rustup"].opt_bin
+        system "rustup", "toolchain", "install", "stable", "--profile", "minimal"
+        system "rustup", "default", "stable"
+        system "rustup", "target", "add", "aarch64-apple-darwin"
+        system "#{python} ./build.py --oss --with-python #{python} "\
+               "--with-version 0.3.12 --rust-target aarch64-apple-darwin"
         bin.install "out/sl"
         lib.install "out/isl-dist.tar.xz"
       end
